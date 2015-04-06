@@ -67,8 +67,32 @@ public class Mapa {
                 != null;
     }
 
-    public int podajDlugoscDrogi(Miasto[] trasa) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
-        return 0;
+    public int podajDlugoscDrogi(Miasto[] trasa) throws MiastoNieIstniejeException, DrogaNieIstniejeException { 
+        if(!czyIstniejeDroga(trasa[0], trasa[trasa.length-1])){
+            throw new DrogaNieIstniejeException();
+        }
+        MapOfLinkedCities RootCity = null;
+        for (int i = 0; i < wherePutNewCity; i++) {
+            if (trasa[0].nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+                RootCity = MapOfLinCit[i];
+                break;
+            }
+        }
+        if (RootCity == null) {
+            throw new MiastoNieIstniejeException();
+        }
+        int distance=0;
+        for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
+            if (trasa[1].nameOfCity.equals(RootCity.DCaD[i].B.nameOfCity)) {
+                distance=RootCity.DCaD[i].distanceBeetweenCities;
+                break;
+            }
+        }
+        if(trasa.length==2) return distance;
+        Miasto[] new_trasa=new Miasto[trasa.length-1];
+        
+        System.arraycopy(trasa, 1, new_trasa, 0, trasa.length-1);
+        return distance+podajDlugoscDrogi(new_trasa);
     }
 
     public Miasto[] podajNajkrotszaDroge(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
