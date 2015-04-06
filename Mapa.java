@@ -2,61 +2,69 @@ package pl.edu.uksw.wmp.prja.laboratorium5;
 
 //@author kot
 public class Mapa {
-
-    Miasto[] MapOfCities;
-    int wherePutNewMap;
-    ContainerOfLinkedCities[] ConOfLinCit;
-    int wherePutNewCon;
+    MapOfLinkedCities[] MapOfLinCit;
+    int wherePutNewCity;
 
     public Mapa() {
-        MapOfCities = new Miasto[255];
-        ConOfLinCit = new ContainerOfLinkedCities[255];
-        /* for (Miasto MapOfCity : MapOfCities) {
-         MapOfCity.nameOfCity="";
-         }
-         for (ContainerOfLinkedCities ConOfLinC : ConOfLinCit) {
-         ConOfLinC.A.nameOfCity="";
-         ConOfLinC.B.nameOfCity="";
-         }*/
-        wherePutNewMap = 0;
-        wherePutNewCon = 0;
+        MapOfLinCit = new MapOfLinkedCities[255];
+        wherePutNewCity = 0;
     }
 
-    public Mapa(Miasto[] MapOfCities, int whereputnewmap, ContainerOfLinkedCities[] ConOfLinCit, int wherePutNewCon) {
-        this.MapOfCities = MapOfCities;
-        this.wherePutNewMap = whereputnewmap;
-        this.ConOfLinCit = ConOfLinCit;
-        this.wherePutNewCon = wherePutNewCon;
+    public Mapa(Miasto[] MapOfCities, int whereputnewmap, MapOfLinkedCities[] ConOfLinCit, int wherePutNewCon) {
+        this.MapOfLinCit = ConOfLinCit;
+        this.wherePutNewCity = wherePutNewCon;
     }
 
     public void dodajMiasto(Miasto miasto) throws MiastoIstniejeException {
-
-        for (int i = 0; i < wherePutNewMap; i++) {
-            if (miasto.nameOfCity.equals(MapOfCities[i].nameOfCity)) {
+        for (int i = 0; i < wherePutNewCity; i++) {
+            if (miasto.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
                 throw new MiastoIstniejeException();
             }
         }
-        MapOfCities[wherePutNewMap++] = miasto;
+        MapOfLinCit[wherePutNewCity++]=new MapOfLinkedCities(miasto);
     }
 
     public void dodajDroge(Miasto skad, Miasto dokad, int dlugosc) throws MiastoNieIstniejeException {
         if (czyIstniejeDroga(skad, dokad)) {
             return;
         }
-        ConOfLinCit[wherePutNewCon++] = new ContainerOfLinkedCities(skad, dokad, dlugosc);
+        for (int i = 0; i < wherePutNewCity; i++) {
+            if (skad.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+                MapOfLinCit[i].addConnectedCity(dokad, dlugosc);
+                break;
+            }
+        }
     }
 
     public boolean czyIstniejeDroga(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException {
         DoesCitiesExistInMap(skad, dokad);
-        if (skad.equals(dokad)) {
+        if (skad.nameOfCity.equals(dokad.nameOfCity)) {
             return true;
         }
-        for (int i = 0; i < wherePutNewCon; i++) {
-            if (ConOfLinCit[i].A.nameOfCity.equals(skad.nameOfCity) && ConOfLinCit[i].B.nameOfCity.equals(dokad.nameOfCity)) {
-                return true;
+        MapOfLinkedCities RootCity = null;
+        for (int i = 0; i < wherePutNewCity; i++) {
+            if (skad.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+                RootCity = MapOfLinCit[i];
+                break;
             }
         }
-        return false;
+        if (RootCity == null) {
+            throw new MiastoNieIstniejeException();
+        }
+        MapOfLinkedCities DestinationCity = null;
+        for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
+            if (dokad.nameOfCity.equals(RootCity.DCaD[i].B.nameOfCity)) {
+                DestinationCity = MapOfLinCit[i];
+                break;
+            }
+        }
+        if (DestinationCity == null) {
+            for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
+                return czyIstniejeDroga(RootCity.DCaD[i].B, dokad);
+            }
+        }
+        return DestinationCity
+                != null;
     }
 
     public int podajDlugoscDrogi(Miasto[] trasa) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
@@ -66,14 +74,14 @@ public class Mapa {
     public Miasto[] podajNajkrotszaDroge(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
         return new Miasto[]{};
     }
-
+    
     public void DoesCitiesExistInMap(Miasto from, Miasto where) throws MiastoNieIstniejeException {
         boolean FirstIsInMap = false, SecoundIsInMap = false;
-        for (int i = 0; i < wherePutNewMap; i++) {
-            if (from.nameOfCity.equals(MapOfCities[i].nameOfCity)) {
+        for (int i = 0; i < wherePutNewCity; i++) {
+            if (from.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
                 FirstIsInMap = true;
             }
-            if (where.nameOfCity.equals(MapOfCities[i].nameOfCity)) {
+            if (where.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
                 SecoundIsInMap = true;
             }
         }
