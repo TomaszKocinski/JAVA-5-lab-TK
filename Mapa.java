@@ -17,7 +17,7 @@ public class Mapa {
 
     public void dodajMiasto(Miasto miasto) throws MiastoIstniejeException {
         for (int i = 0; i < wherePutNewCity; i++) {
-            if (miasto.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (miasto.toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 throw new MiastoIstniejeException();
             }
         }
@@ -29,7 +29,7 @@ public class Mapa {
             return;
         }
         for (int i = 0; i < wherePutNewCity; i++) {
-            if (skad.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (skad.toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 MapOfLinCit[i].addConnectedCity(dokad, dlugosc);
                 break;
             }
@@ -38,12 +38,12 @@ public class Mapa {
 
     public boolean czyIstniejeDroga(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException {
         DoesCitiesExistInMap(skad, dokad);
-        if (skad.nameOfCity.equals(dokad.nameOfCity)) {
+        if (skad.toString().equals(dokad.toString())) {
             return true;
         }
         MapOfLinkedCities RootCity = null;
         for (int i = 0; i < wherePutNewCity; i++) {
-            if (skad.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (skad.toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 RootCity = MapOfLinCit[i];
                 break;
             }
@@ -53,7 +53,7 @@ public class Mapa {
         }
         MapOfLinkedCities DestinationCity = null;
         for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
-            if (dokad.nameOfCity.equals(RootCity.DCaD[i].B.nameOfCity)) {
+            if (dokad.toString().equals(RootCity.DCaD[i].B.toString())) {
                 DestinationCity = MapOfLinCit[i];
                 break;
             }
@@ -73,7 +73,7 @@ public class Mapa {
         }
         MapOfLinkedCities RootCity = null;
         for (int i = 0; i < wherePutNewCity; i++) {
-            if (trasa[0].nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (trasa[0].toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 RootCity = MapOfLinCit[i];
                 break;
             }
@@ -83,7 +83,7 @@ public class Mapa {
         }
         int distance=0;
         for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
-            if (trasa[1].nameOfCity.equals(RootCity.DCaD[i].B.nameOfCity)) {
+            if (trasa[1].toString().equals(RootCity.DCaD[i].B.toString())) {
                 distance=RootCity.DCaD[i].distanceBeetweenCities;
                 break;
             }
@@ -96,16 +96,20 @@ public class Mapa {
     }
 
     public Miasto[] podajNajkrotszaDroge(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
+        if(!czyIstniejeDroga(skad, dokad)){
+            throw new DrogaNieIstniejeException();
+        }
+        
         return new Miasto[]{};
     }
     
     public void DoesCitiesExistInMap(Miasto from, Miasto where) throws MiastoNieIstniejeException {
         boolean FirstIsInMap = false, SecoundIsInMap = false;
         for (int i = 0; i < wherePutNewCity; i++) {
-            if (from.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (from.toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 FirstIsInMap = true;
             }
-            if (where.nameOfCity.equals(MapOfLinCit[i].RootCity.nameOfCity)) {
+            if (where.toString().equals(MapOfLinCit[i].RootCity.toString())) {
                 SecoundIsInMap = true;
             }
         }
