@@ -99,31 +99,27 @@ public class Mapa {
 
     public Miasto[] podajNajkrotszaDroge(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
         zaglebienie(skad, dokad);
-       // Miasto[][] allConSkrocne;
-        Miasto[] najmniejszy=null;
-        int dlugosc=9999999;
-        for (int i = 0; allConnections[i]!=null; i++) {
-            
+        // Miasto[][] allConSkrocne;
+        Miasto[] najmniejszy = null;
+        int dlugosc = 9999999;
+        for (int i = 0; allConnections[i] != null; i++) {
             int j;
-            for ( j = 0; allConnections[i][j]!=null; j++) {
-            }
-            Miasto[] terazniejszy=new Miasto[j];
+            for (j = 0; allConnections[i][j] != null; j++);
+            Miasto[] terazniejszy = new Miasto[j];
             System.arraycopy(allConnections[i], 0, terazniejszy, 0, j);
-            if(terazniejszy.length<2)break;
-            int int_temp=podajDlugoscDrogi(terazniejszy);
-            if(dlugosc>int_temp){
-                najmniejszy=terazniejszy;
-                dlugosc=int_temp;
+            if (terazniejszy.length < 2) {
+                break;
             }
-            
-            
+            int int_temp = podajDlugoscDrogi(terazniejszy);
+            if (dlugosc > int_temp) {
+                najmniejszy = terazniejszy;
+                dlugosc = int_temp;
+            }
         }
-        
-        
         return najmniejszy;
     }
     public boolean zaglebienie(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
-        System.out.println(column+" "+row);   
+         
         if(!czyIstniejeDroga(skad, dokad)){
             throw new DrogaNieIstniejeException();
         }
@@ -151,7 +147,6 @@ public class Mapa {
             zaglebienie(from.DCaD[i].B, dokad);
                 row--;
         }
-        
         return false;
      
     }
