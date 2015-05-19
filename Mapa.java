@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package pl.edu.uksw.wmp.prja.laboratorium5;
+package pl.edu.uksw.wmp.prja.laboratorium10;
 
 import java.util.Vector;
 
@@ -13,8 +13,6 @@ import java.util.Vector;
 public class Mapa {
 
     Vector<MapOfLinkedCities> MapOfLinCit;
-    Miasto[][] allConnections = new Miasto[255][255];
-    Integer column = 0, row = 0;
 
     public Mapa() {
         this.MapOfLinCit = new Vector<>();
@@ -31,7 +29,7 @@ public class Mapa {
     }
 
     public void dodajDroge(Miasto skad, Miasto dokad, int dlugosc) throws MiastoNieIstniejeException {
-        if (czyIstniejeDroga(skad, dokad)) {
+        if (czyIstniejeBezposredniaDroga(skad, dokad)) {
             return;
         }
         for (MapOfLinkedCities MapOfLinCit1 : MapOfLinCit) {
@@ -41,6 +39,38 @@ public class Mapa {
             }
         }
 
+    }
+
+    public boolean czyIstniejeBezposredniaDroga(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException {
+        DoesCitiesExistInMap(skad, dokad);
+        if (skad.equals(dokad)) {
+            return true;
+        }
+        MapOfLinkedCities tempRootCity = null;
+        for (MapOfLinkedCities MapOfLinCit1 : MapOfLinCit) {
+            if (skad.equals(MapOfLinCit1.RootCity)) {
+                tempRootCity = MapOfLinCit1;
+            }
+        }
+
+        if (tempRootCity == null) {
+            throw new MiastoNieIstniejeException();
+        }
+        MapOfLinkedCities DestinationCity = null;
+
+        for (CityAndDistance Conn : tempRootCity.ConnectedCitiesAndDistance) {
+            if (dokad.equals(Conn.ConnectedCity)) {
+                for (MapOfLinkedCities MapOfLinCit1 : MapOfLinCit) {
+                    if (dokad.equals(MapOfLinCit1.RootCity)) {
+                        DestinationCity = MapOfLinCit1;
+                    }
+                }
+            }
+        }
+        if (DestinationCity == null) {
+            return false;
+        }
+        return true;
     }
 
     public boolean czyIstniejeDroga(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException {
@@ -74,11 +104,6 @@ public class Mapa {
                 return czyIstniejeDroga(Conn.ConnectedCity, dokad);
             }
         }
-        /*if (DestinationCity == null) {
-         for (int i = 0; i < tempRootCity.howMuchConnectedCity; i++) {
-         return czyIstniejeDroga(tempRootCity.ConnectedCitiesAndDistance[i].ConnectedCity, dokad);
-         }
-         }*/
         if (DestinationCity == null) {
             return false;
         }
@@ -105,11 +130,6 @@ public class Mapa {
                 distance = Conn.distanceBeetweenCities;
             }
         }
-        /*for (int i = 0; i < RootCity.howMuchConnectedCity; i++) {
-         if (trasa[1].toString().equals(RootCity.ConnectedCitiesAndDistance[i].ConnectedCity.toString())) {
-         distance = RootCity.ConnectedCitiesAndDistance[i].distanceBeetweenCities;
-         }
-         }*/
         if (trasa.length == 2) {
             return distance;
         }
@@ -139,28 +159,19 @@ public class Mapa {
     }
 
     public Miasto[] podajNajkrotszaDroge(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
-        zaglebienie(skad, dokad);
-        // Miasto[][] allConSkrocne;
-        Miasto[] najmniejszy = null;
-        int dlugosc = 9999999;
-        for (int i = 0; allConnections[i] != null; i++) {
-            int j;
-            for (j = 0; allConnections[i][j] != null; j++);
-            Miasto[] terazniejszy = new Miasto[j];
-            System.arraycopy(allConnections[i], 0, terazniejszy, 0, j);
-            if (terazniejszy.length < 2) {
-                break;
-            }
-            int int_temp = podajDlugoscDrogi(terazniejszy);
-            if (dlugosc > int_temp) {
-                najmniejszy = terazniejszy;
-                dlugosc = int_temp;
-            }
+        Vector<Miasto> Najkrotsze_miasto = new Vector<>();
+        {
+            Vector<Miasto> Tymczasowe_miasto = new Vector<>();
+            zaglebienie(skad, dokad, Najkrotsze_miasto, Tymczasowe_miasto);
         }
-        return najmniejszy;
+        for (Miasto Najkrotsze_miasto1 : Najkrotsze_miasto) {
+            System.out.print(Najkrotsze_miasto1.toString());
+        }
+        System.out.println("");
+        return Najkrotsze_miasto.toArray(new Miasto[Najkrotsze_miasto.size()]);
     }
 
-    public boolean zaglebienie(Miasto skad, Miasto dokad) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
+    public boolean zaglebienie(Miasto skad, Miasto dokad, Vector<Miasto> Najkrotsze_miasto, Vector<Miasto> Tymczasowe_miasto) throws MiastoNieIstniejeException, DrogaNieIstniejeException {
 
         if (!czyIstniejeDroga(skad, dokad)) {
             throw new DrogaNieIstniejeException();
@@ -181,24 +192,42 @@ public class Mapa {
         if (from == null || where == null) {
             throw new MiastoNieIstniejeException();
         }
-        
+
         if (from.toString().equals(where.toString())) {
-            System.arraycopy(allConnections[column], 0, allConnections[column + 1], 0, row - 1);
-            allConnections[column++][row] = from.RootCity;
+            Tymczasowe_miasto.add(from.RootCity);
+            if (Najkrotsze_miasto.isEmpty()) {
+                Najkrotsze_miasto.addAll(Tymczasowe_miasto);
+            } else if (podajDlugoscDrogi(Najkrotsze_miasto.toArray(new Miasto[Najkrotsze_miasto.size()])) > podajDlugoscDrogi(Tymczasowe_miasto.toArray(new Miasto[Tymczasowe_miasto.size()]))) {
+                Najkrotsze_miasto.clear();
+                Najkrotsze_miasto.addAll(Tymczasowe_miasto);
+            }
             return true;
         }
         for (int i = 0; i < from.ConnectedCitiesAndDistance.size(); i++) {
-            allConnections[column][row++] = from.RootCity;
-            for (CityAndDistance Conn : from.ConnectedCitiesAndDistance) {
-                zaglebienie(Conn.ConnectedCity, dokad);
+            if (Tymczasowe_miasto.contains(from.RootCity)) {
+                return false;
             }
-            row--;
+            if(czyIstniejeBezposredniaDroga(skad, dokad)){
+                
+            
+            
+            
+            }
+            Tymczasowe_miasto.add(from.RootCity);
+            
+            for (CityAndDistance Conn : from.ConnectedCitiesAndDistance) {
+                if (!zaglebienie(Conn.ConnectedCity, dokad, Najkrotsze_miasto, Tymczasowe_miasto)) {
+                    continue;
+                }
+                Tymczasowe_miasto.removeElementAt(Tymczasowe_miasto.size() - 1);
+            }
         }
-        return false;
+        return true;
     }
 
     public void DoesCitiesExistInMap(Miasto from, Miasto where) throws MiastoNieIstniejeException {
         boolean FirstIsInMap = false, SecondIsInMap = false;
+        //System.out.println(from.toString() + where.toString());
         for (MapOfLinkedCities MapOfLinCit1 : MapOfLinCit) {
             if (from.equals(MapOfLinCit1.RootCity)) {
                 FirstIsInMap = true;

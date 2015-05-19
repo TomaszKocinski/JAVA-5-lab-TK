@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package pl.edu.uksw.wmp.prja.laboratorium5;
+package pl.edu.uksw.wmp.prja.laboratorium10;
 
 import java.util.Vector;
 
@@ -26,19 +26,13 @@ public class MapOfLinkedCities {
 
     Miasto RootCity;
     Vector<CityAndDistance> ConnectedCitiesAndDistance;
-    public int howMuchConnectedCity;
 
-    public MapOfLinkedCities(Miasto RootCity, Vector<CityAndDistance> ConnectedCitiesAndDistance, int howMuchConnectedCity) {
-        this.RootCity = RootCity;
-        this.ConnectedCitiesAndDistance = ConnectedCitiesAndDistance;
-        this.howMuchConnectedCity = howMuchConnectedCity;
-    }
     public MapOfLinkedCities(Miasto RootCity) {
         this.RootCity = RootCity;
         ConnectedCitiesAndDistance = new Vector<>();
-        howMuchConnectedCity = 0;
     }
+
     public void addConnectedCity(Miasto where, int distance) {
-        ConnectedCitiesAndDistance.add(new CityAndDistance(where, distance)) ;
+        ConnectedCitiesAndDistance.add(new CityAndDistance(where, distance));
     }
 }
