@@ -11,17 +11,16 @@ package pl.edu.uksw.wmp.prja.laboratorium5;
 public class Miasto {
     String nameOfCity;
 
-    public Miasto() {
-        nameOfCity="";
+    public Miasto(String nameOfCity) {
+        this.nameOfCity = nameOfCity;
     }
-    
-    public Miasto(String nazwa) {
-        nameOfCity=nazwa;
-    }
-
     @Override
     public String toString() {
         return nameOfCity; //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public boolean equals(Object o) { // netbeans, mówi, że trzeba hashcode, nie mam pojecia co to jest, ale equals bez tego dziala.
+        return o.toString().equals(this.toString()) ;
+    }
 }

@@ -5,53 +5,40 @@
  */
 package pl.edu.uksw.wmp.prja.laboratorium5;
 
+import java.util.Vector;
+
 /**
  *
- * @author Kot
+ * @author student
  */
-class CityAndDistance{
-    Miasto B;
+class CityAndDistance {
+
+    Miasto ConnectedCity;
     int distanceBeetweenCities;
 
-    public CityAndDistance() {
-    distanceBeetweenCities=0;
-    }
-
     public CityAndDistance(Miasto B, int distanceBeetweenCities) {
-        this.B = B;
+        this.ConnectedCity = B;
         this.distanceBeetweenCities = distanceBeetweenCities;
     }
-    
 }
+
 public class MapOfLinkedCities {
+
     Miasto RootCity;
-    CityAndDistance[] DCaD;
+    Vector<CityAndDistance> ConnectedCitiesAndDistance;
     public int howMuchConnectedCity;
-    public MapOfLinkedCities() {
-        DCaD=new CityAndDistance[255];
-        howMuchConnectedCity=0;
-    }
-    public MapOfLinkedCities(Miasto A) {
-        this.RootCity = A;
-        DCaD=new CityAndDistance[255];
-        howMuchConnectedCity=0;
-    }
-    public MapOfLinkedCities(Miasto A, CityAndDistance[] DCaD, int howMuchConnectedCity) {
-        this.RootCity = A;
-        this.DCaD = DCaD;
+
+    public MapOfLinkedCities(Miasto RootCity, Vector<CityAndDistance> ConnectedCitiesAndDistance, int howMuchConnectedCity) {
+        this.RootCity = RootCity;
+        this.ConnectedCitiesAndDistance = ConnectedCitiesAndDistance;
         this.howMuchConnectedCity = howMuchConnectedCity;
     }
-    /*public MapOfLinkedCities(Miasto A, Miasto dokad, int howMuchConnectedCity) {
-        this.RootCity = A;
-        addConnectedCity(dokad, howMuchConnectedCity);
-        this.howMuchConnectedCity = howMuchConnectedCity;
-    }*/
-    public void addConnectedCity(Miasto where, int distance){
-        /*DCaD[howMuchConnectedCity].B=where;
-        DCaD[howMuchConnectedCity++].distanceBeetweenCities=distance;
-                */
-        DCaD[howMuchConnectedCity++]=new CityAndDistance(where, distance);
+    public MapOfLinkedCities(Miasto RootCity) {
+        this.RootCity = RootCity;
+        ConnectedCitiesAndDistance = new Vector<>();
+        howMuchConnectedCity = 0;
     }
-    
-    
+    public void addConnectedCity(Miasto where, int distance) {
+        ConnectedCitiesAndDistance.add(new CityAndDistance(where, distance)) ;
+    }
 }
